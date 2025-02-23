@@ -1,0 +1,52 @@
+{
+    "name": "neontsun/lazy-object",
+    "description": "Wrapper for native lazy object in php 8.4",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "php",
+        "8.4",
+        "lazy",
+        "lazy object",
+        "ghost",
+        "proxy"
+    ],
+    "authors": [
+        {
+            "name": "Anton Kruglov",
+            "email": "usualtsun@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.45",
+        "bamarni/composer-bin-plugin": "^1.8"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Neontsun\\LazyObject\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "bamarni/composer-bin-plugin": true
+        },
+        "bump-after-update": true,
+        "sort-packages": true
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": false,
+            "forward-command": true,
+            "target-directory": "tools"
+        }
+    },
+    "scripts": {
+        "phpstan": "tools/phpstan/vendor/bin/phpstan analyse --autoload-file vendor/autoload.php --configuration phpstan.dist.neon"
+    }
+}
