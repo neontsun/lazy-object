@@ -1,1 +1,9 @@
-{}
+{
+    "require-dev": {
+        "rector/rector": "^2.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "bump-after-update": "dev"
+    }
+}
