@@ -10,6 +10,7 @@ use Neontsun\LazyObject\Builder\LazyGhostBuilder;
 use Neontsun\LazyObject\DTO\Property;
 use Neontsun\LazyObject\Exception\LazyObjectException;
 use Neontsun\LazyObject\LazyObjectFactory;
+use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithImplementedLazyInterface;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithOneLazyProperty;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -188,4 +189,26 @@ final class LazyGhostBuilderTest extends TestCase
 
         $data = $ghost->data;
     }
+	
+	/**
+	 * @throws Exception
+	 * @throws ExpectationFailedException
+	 * @throws InvalidArgumentException
+	 * @throws LazyObjectException
+	 */
+	#[Test]
+	public function checkSuccessBuildFromLazyInterfaceMethods(): void
+	{
+		$ghost = LazyObjectWithImplementedLazyInterface::lazy($this->factory)
+			->property('name', 'name')
+			->property('date', '2025-12-01')
+			->initializer(static function(Property $data): void {
+				$data->value = [1, 2, 3];
+			})
+			->build();
+		
+		$this->assertTrue($ghost->isUninitialized());
+		$foo = $ghost->data;
+		$this->assertFalse($ghost->isUninitialized());
+	}
 }
