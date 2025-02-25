@@ -6,7 +6,6 @@ namespace Neontsun\LazyObject\Contract\Builder;
 
 use Closure;
 use Neontsun\LazyObject\Exception\LazyObjectException;
-use ReflectionException;
 
 /**
  * @template T of object
@@ -14,30 +13,18 @@ use ReflectionException;
 interface LazyGhostBuilderInterface
 {
     /**
-     * Помечает поле как отложенное, заполняя его данными, которые
-     * возвращает замыкание. Данные будут загружены при обращении к полю.
+     * Set up an initializer that will be called when lazy fields are accessed.
+     * Lazy property objects are passed to the closure parameters.
+     * {@see \Neontsun\LazyObject\DTO\Property}
      *
-     * @param non-empty-string $property
-     * @param Closure():mixed $lazy
+     * @param Closure():void $closure
      * @return self<T>
-     * @throws LazyObjectException
      */
-    public function lazyProperty(string $property, Closure $lazy): self;
+    public function initializer(Closure $closure): self;
 
     /**
-     * Помечает группу полей как отложенные, заполняя их данными, которые
-     * возвращает замыкание. ВСЕ данные будут загружены при обращении к ЛЮБОМУ полю.
-     *
-     * @param non-empty-list<non-empty-string> $properties
-     * @param Closure():mixed $lazy
-     * @return self<T>
-     * @throws LazyObjectException
-     */
-    public function lazyGroupProperties(array $properties, Closure $lazy): self;
-
-    /**
-     * Никак не помечает поле, а просто заполняет его переданными данными.
-     * При обращении к полю НЕ инициализирует другие поля.
+     * Doesn't mark the field in any way, but simply fills it with the transmitted data.
+     * When accessing a field, it does NOT initialize other fields.
      *
      * @param non-empty-string $property
      * @return self<T>
@@ -46,8 +33,7 @@ interface LazyGhostBuilderInterface
 
     /**
      * @return T
-     * @throws ReflectionException
      * @throws LazyObjectException
      */
-    public function build(): object;
+    public function build();
 }

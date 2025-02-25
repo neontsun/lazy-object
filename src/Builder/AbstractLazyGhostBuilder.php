@@ -5,28 +5,30 @@ declare(strict_types = 1);
 namespace Neontsun\LazyObject\Builder;
 
 use Closure;
+use InvalidArgumentException;
 use Neontsun\LazyObject\Attribute\Lazy;
-use Neontsun\LazyObject\Entity\LazyGroup;
+use Neontsun\LazyObject\DTO\Property;
 use Neontsun\LazyObject\Exception\LazyObjectException;
-use Neontsun\ReadAttribute\ReadAttribute;
 use ReflectionClass;
-use ReflectionException;
+use ReflectionProperty;
+use Throwable;
 
-use function count;
 use function in_array;
-use function is_array;
 
 /**
  * @template T of object
  */
 abstract class AbstractLazyGhostBuilder
 {
-    use ReadAttribute;
+    /**
+     * @var class-string<T> $class
+     */
+    protected readonly string $class;
 
     /**
-     * @var array<non-empty-string, Closure():mixed>
+     * @var null|Closure():void
      */
-    protected array $lazyProperties = [];
+    protected ?Closure $initializer = null;
 
     /**
      * @var array<non-empty-string, mixed>
@@ -34,210 +36,124 @@ abstract class AbstractLazyGhostBuilder
     protected array $properties = [];
 
     /**
-     * @var list<LazyGroup>
-     */
-    protected array $lazyGroupProperties = [];
-
-    /**
      * @param class-string<T> $class
+     * @throws InvalidArgumentException
      */
-    public function __construct(
-        protected readonly string $class,
-    ) {}
-
-    /**
-     * @param non-empty-list<non-empty-string> $properties
-     * @throws LazyObjectException
-     */
-    protected function checkLazyPropertiesHasLazyAttribute(array $properties): void
+    public function __construct(string $class)
     {
-        try {
-            $have = $this->propertiesHaveAnAttribute($this->class, $properties, Lazy::class);
-        } catch (ReflectionException) {
-            throw new LazyObjectException('Передан массив свойств, одно или несколько из которых нет в классе');
+        if (! class_exists($class)) {
+            throw new InvalidArgumentException('Expected class-string, but actual type string');
         }
 
-        if (! $have) {
-            throw new LazyObjectException('Не у всех свойств класса, переданных для отложенной инициализации, стоит атрибут ' . Lazy::class);
+        $this->class = $class;
+    }
+
+    /**
+	 * @param ReflectionClass<T> $reflector
+     * @throws LazyObjectException
+     * @phpstan-assert !null $this->initializer
+     */
+    protected function checksBeforeBuild(ReflectionClass $reflector): void
+    {
+        if (null === $this->initializer) {
+            throw new LazyObjectException('Initializer closure must be assigned');
+        }
+
+        $this->checkGivenAllNotLazyConstructorParameters($reflector);
+    }
+
+    /**
+	 * @param ReflectionClass<T> $reflector
+     * @return Closure(T): void
+     * @throws LazyObjectException
+     */
+    protected function getInitializer(ReflectionClass $reflector): Closure
+    {
+        $this->checksBeforeBuild($reflector);
+
+        $lazyProperties = $this->getLazyProperties($reflector);
+        $initializer = $this->initializer;
+
+        return static function(object $class) use ($lazyProperties, $reflector, $initializer): void {
+            ($initializer)(...$lazyProperties);
+
+            try {
+                foreach ($lazyProperties as $property) {
+                    $reflector->getProperty($property->name)->setRawValue($class, $property->value);
+                }
+            } catch (Throwable $e) {
+                throw new LazyObjectException(
+                    message: 'The properties passed to create the deferred object do not match the types declared in the class',
+                    previous: $e,
+                );
+            }
+        };
+    }
+
+    /**
+     * We check that all fields that are not marked as lazy are transferred
+     *
+	 * @param ReflectionClass<T> $reflector
+     * @throws LazyObjectException
+     */
+    private function checkGivenAllNotLazyConstructorParameters(ReflectionClass $reflector): void
+    {
+        $nonLazyPropertyNames = array_keys($this->properties);
+
+        foreach ($this->getNonLazyProperties($reflector) as $nonLazyProperty) {
+            if (! in_array($nonLazyProperty->getName(), $nonLazyPropertyNames, true)) {
+                throw new LazyObjectException('Not all properties were passed to create the class');
+            }
         }
     }
 
     /**
-     * @param ReflectionClass<T> $reflector
-     * @return list<non-empty-string>
+	 * @param ReflectionClass<T> $reflector
+     * @return iterable<ReflectionProperty>
      * @throws LazyObjectException
      */
-    protected function constructorPropertiesNames(ReflectionClass $reflector): array
+    private function getNonLazyProperties(ReflectionClass $reflector): iterable
     {
-        $constructor = $reflector->getConstructor();
-
-        if (null === $constructor) {
-            throw new LazyObjectException('У переданного класса нет конструктора');
+        foreach ($this->constructorProperties($reflector) as $property) {
+            if ([] === $property->getAttributes(Lazy::class)) {
+                yield $property;
+            }
         }
+    }
 
-        $reflectionParameters = $constructor->getParameters();
+    /**
+	 * @param ReflectionClass<T> $reflector
+     * @return list<Property>
+     * @throws LazyObjectException
+     */
+    private function getLazyProperties(ReflectionClass $reflector): array
+    {
         $properties = [];
 
-        foreach ($reflectionParameters as $reflectionParameter) {
-            if (! $reflectionParameter->isPromoted()) {
-                throw new LazyObjectException('Параметр конструктора не продвинут до свойства класса');
+        foreach ($this->constructorProperties($reflector) as $property) {
+            if ([] !== $property->getAttributes(Lazy::class)) {
+                $properties[] = new Property(name: $property->getName());
             }
-
-            $properties[] = $reflectionParameter->getName();
         }
 
         return $properties;
     }
 
     /**
-     * @param list<non-empty-string> $constructorParameterNames
+     * @param ReflectionClass<T> $reflector
+     * @return iterable<ReflectionProperty>
+     * @throws LazyObjectException
      */
-    protected function checkGivenAllClassConstructorParameters(array $constructorParameterNames): bool
+    private function constructorProperties(ReflectionClass $reflector): iterable
     {
-        $lazyGroupsKeys = (function(): array {
-            $keys = [];
+        $properties = $reflector->getProperties();
 
-            foreach ($this->lazyGroupProperties as $lazyGroupProperty) {
-                $keys = array_merge($keys, $lazyGroupProperty->properties);
+        foreach ($properties as $property) {
+            if (! $property->isPromoted()) {
+                throw new LazyObjectException('Property is not promoted to constructor parameter class property');
             }
 
-            return $keys;
-        })();
-
-        $separatedCount = count($this->lazyProperties) + count($this->properties) + count($lazyGroupsKeys);
-        $constructorParameterCount = count($constructorParameterNames);
-
-        /**
-         * Если кол-во параметров в конструкторе не совпадает с кол-вом в переданных массивах
-         */
-        if ($constructorParameterCount !== $separatedCount) {
-            return false;
+            yield $property;
         }
-
-        $mergedKeys = array_merge(
-            array_keys($this->lazyProperties),
-            array_keys($this->properties),
-            array_unique($lazyGroupsKeys),
-        );
-        $mergedKeys = array_unique($mergedKeys);
-
-        $mergedCount = count($mergedKeys);
-
-        /**
-         * Если кол-во свойств в переданных двух массивах сложенных раздельно
-         * не равно кол-ву, посчитанному через слияния двух массивов
-         * Это могло произойти, если в массивах есть пересекающиеся ключи
-         */
-        if ($separatedCount !== $mergedCount) {
-            return false;
-        }
-
-        /**
-         * Получаем слияние ключи свойств из двух массивов и находим пересечение с параметрами конструктора
-         * Если их кол-во совпадает, то сравниваем массив ключей и массив параметров конструктора
-         */
-        $intersect = array_intersect($constructorParameterNames, $mergedKeys);
-
-        if ($constructorParameterCount !== count($intersect)) {
-            return false;
-        }
-
-        sort($constructorParameterNames);
-        sort($intersect);
-
-        return $constructorParameterNames === $intersect;
-    }
-
-    /**
-     * @param list<non-empty-string> $constructorParameterNames
-     * @return Closure(T): void
-     */
-    protected function initializer(array $constructorParameterNames): Closure
-    {
-        return function(object $class) use ($constructorParameterNames): void {
-            $constructorParameters = [];
-            $initializerGroups = [];
-
-            foreach ($constructorParameterNames as $parameterName) {
-                $group = $this->getGroupClosureByPropertyName($parameterName);
-
-                if (
-                    ! isset($this->lazyProperties[$parameterName])
-                    && null === $group
-                ) {
-                    throw new LazyObjectException('Переданы не все аргументы конструктора для создания объекта');
-                }
-
-                if (isset($this->lazyProperties[$parameterName])) {
-                    $lazyCallback = $this->lazyProperties[$parameterName];
-
-                    $constructorParameters[$parameterName] = $lazyCallback();
-
-                    continue;
-                }
-
-                if (null === $group) {
-                    throw new LazyObjectException(
-                        'Достигнут нереалистичный сценарий, когда прошло условие нахождения параметра конструктора во всех массивах, а группа не нашлась',
-                    );
-                }
-
-                if (in_array($group->id, $initializerGroups, true)) {
-                    continue;
-                }
-
-                $groupCallbackResult = ($group->closure)();
-
-                if (! is_array($groupCallbackResult)) {
-                    throw new LazyObjectException('Замыкание получения данных для группы свойств возвращает не массив');
-                }
-
-                if (count($groupCallbackResult) !== count($group->properties)) {
-                    throw new LazyObjectException('Замыкание получения данных вернула массив данных не соответствующий списку свойств');
-                }
-
-                $callbackResultKeys = array_keys($groupCallbackResult);
-                $groupProperties = $group->properties;
-
-                sort($callbackResultKeys);
-                sort($groupProperties);
-
-                if ($callbackResultKeys !== $groupProperties) {
-                    throw new LazyObjectException('Замыкание получения данных вернула массив данных не соответствующий списку свойств');
-                }
-
-                $initializerGroups[] = $group->id;
-
-                foreach ($callbackResultKeys as $callbackResultKey) {
-                    $constructorParameters[$callbackResultKey] = $groupCallbackResult[$callbackResultKey];
-                }
-            }
-
-            try {
-                $reflectionClass = new ReflectionClass($class);
-
-                foreach ($constructorParameterNames as $constructorParameterName) {
-                    $reflectionClass->getProperty($constructorParameterName)->setRawValue($class, $constructorParameters[$constructorParameterName]);
-                }
-            } catch (ReflectionException) {
-                throw new LazyObjectException('Переданные для создания отложенного объекта свойства не соответствую декларированным в классе типам');
-            }
-        };
-    }
-
-    /**
-     * @param non-empty-string $property
-     */
-    protected function getGroupClosureByPropertyName(string $property): ?LazyGroup
-    {
-        foreach ($this->lazyGroupProperties as $group) {
-            if (! $group->hasProperty($property)) {
-                continue;
-            }
-
-            return $group;
-        }
-
-        return null;
     }
 }

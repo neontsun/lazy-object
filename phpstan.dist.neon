@@ -22,4 +22,7 @@ parameters:
         reportUncheckedExceptionDeadCatch: false
         check:
             tooWideThrowType: false
-            missingCheckedExceptionInThrows: true 
+            missingCheckedExceptionInThrows: true
+    ignoreErrors:
+        - 
+            identifier: staticMethod.dynamicCall
