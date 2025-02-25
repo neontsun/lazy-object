@@ -55,6 +55,7 @@
     "scripts": {
         "csfix": "PHP_CS_FIXER_IGNORE_ENV=1 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --show-progress=bar --diff -vvv",
         "phpstan": "tools/phpstan/vendor/bin/phpstan analyse --autoload-file vendor/autoload.php --configuration phpstan.dist.neon",
+        "phpstan-baseline": "tools/phpstan/vendor/bin/phpstan analyse --autoload-file vendor/autoload.php --configuration phpstan.dist.neon --generate-baseline phpstan-baseline.neon",
         "rector": "tools/rector/vendor/bin/rector process --config=rector.php --ansi",
         "tests": "vendor/bin/phpunit --configuration phpunit.xml"
     }
