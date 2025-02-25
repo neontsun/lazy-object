@@ -15,7 +15,7 @@ interface LazyInterface
 
     /**
      * Checks if the model is a lazy loading model and if the fields that are lazy are not initialized.
-	 * Returns true if at least one field marked as lazy has been loaded.
+     * Returns true if at least one field marked as lazy has been loaded.
      */
     public function isUninitialized(): bool;
 }

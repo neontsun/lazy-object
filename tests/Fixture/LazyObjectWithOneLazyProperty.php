@@ -8,9 +8,9 @@ use Neontsun\LazyObject\Attribute\Lazy;
 
 final readonly class LazyObjectWithOneLazyProperty
 {
-	/**
-	 * @param list<mixed> $data
-	 */
+    /**
+     * @param list<mixed> $data
+     */
     public function __construct(
         private(set) string $name,
         private(set) string $date,

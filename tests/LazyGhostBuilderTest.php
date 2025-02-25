@@ -85,28 +85,28 @@ final class LazyGhostBuilderTest extends TestCase
         $this->assertInstanceOf(LazyObjectWithOneLazyProperty::class, $ghost);
         $this->assertTrue(new ReflectionClass(LazyObjectWithOneLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
-	
-	/**
-	 * @throws Exception
-	 * @throws ExpectationFailedException
-	 * @throws InvalidArgumentException
-	 * @throws LazyObjectException
-	 * @throws UnknownClassOrInterfaceException
-	 */
-	#[Test]
-	public function checkSuccessBuildGhostWithSomeLazyProperties(): void
-	{
-		$ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
-			->initializer(static function(Property $firstData, Property $secondData): void {
-				$firstData->value = [1, 2, 3];
-				$secondData->value = 123;
-			})
-			->build();
-		
-		$this->assertInstanceOf(LazyObjectWithTwoLazyProperty::class, $ghost);
-		$this->assertTrue(new ReflectionClass(LazyObjectWithTwoLazyProperty::class)->isUninitializedLazyObject($ghost));
-	}
-	
+
+    /**
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     * @throws UnknownClassOrInterfaceException
+     */
+    #[Test]
+    public function checkSuccessBuildGhostWithSomeLazyProperties(): void
+    {
+        $ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
+            ->initializer(static function(Property $firstData, Property $secondData): void {
+                $firstData->value = [1, 2, 3];
+                $secondData->value = 123;
+            })
+            ->build();
+
+        $this->assertInstanceOf(LazyObjectWithTwoLazyProperty::class, $ghost);
+        $this->assertTrue(new ReflectionClass(LazyObjectWithTwoLazyProperty::class)->isUninitializedLazyObject($ghost));
+    }
+
     /**
      * @throws Exception
      * @throws ExpectationFailedException
@@ -138,7 +138,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+        $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->build();
@@ -153,7 +153,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+        $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->initializer(static function(Property $data): void {
                 $data->value = [1, 2, 3];
             })
@@ -169,7 +169,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+        $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', [])
             ->property('date', 12_345)
             ->initializer(static function(Property $data): void {
@@ -197,26 +197,26 @@ final class LazyGhostBuilderTest extends TestCase
 
         $data = $ghost->data;
     }
-	
-	/**
-	 * @throws Exception
-	 * @throws ExpectationFailedException
-	 * @throws InvalidArgumentException
-	 * @throws LazyObjectException
-	 */
-	#[Test]
-	public function checkSuccessBuildFromLazyInterfaceMethods(): void
-	{
-		$ghost = LazyObjectWithImplementedLazyInterface::lazy($this->factory)
-			->property('name', 'name')
-			->property('date', '2025-12-01')
-			->initializer(static function(Property $data): void {
-				$data->value = [1, 2, 3];
-			})
-			->build();
-		
-		$this->assertTrue($ghost->isUninitialized());
-		$foo = $ghost->data;
-		$this->assertFalse($ghost->isUninitialized());
-	}
+
+    /**
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     */
+    #[Test]
+    public function checkSuccessBuildFromLazyInterfaceMethods(): void
+    {
+        $ghost = LazyObjectWithImplementedLazyInterface::lazy($this->factory)
+            ->property('name', 'name')
+            ->property('date', '2025-12-01')
+            ->initializer(static function(Property $data): void {
+                $data->value = [1, 2, 3];
+            })
+            ->build();
+
+        $this->assertTrue($ghost->isUninitialized());
+        $foo = $ghost->data;
+        $this->assertFalse($ghost->isUninitialized());
+    }
 }

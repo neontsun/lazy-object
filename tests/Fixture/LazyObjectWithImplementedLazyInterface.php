@@ -14,30 +14,29 @@ use ReflectionClass;
 
 final readonly class LazyObjectWithImplementedLazyInterface implements LazyInterface
 {
-	/**
-	 * @param list<mixed> $data
-	 */
+    /**
+     * @param list<mixed> $data
+     */
     public function __construct(
         private(set) string $name,
         private(set) string $date,
         #[Lazy]
         private(set) array $data,
     ) {}
-	
-	/**
-	 * @param LazyObjectFactoryInterface $factory
-	 * @return LazyGhostBuilderInterface<self>
-	 * @throws InvalidArgumentException
-	 */
-	#[Override]
-	public static function lazy(LazyObjectFactoryInterface $factory): LazyGhostBuilderInterface
-	{
-		return $factory->ghost(self::class);
-	}
-	
-	#[Override]
-	public function isUninitialized(): bool
-	{
-		return new ReflectionClass(self::class)->isUninitializedLazyObject($this);
-	}
+
+    /**
+     * @return LazyGhostBuilderInterface<self>
+     * @throws InvalidArgumentException
+     */
+    #[Override]
+    public static function lazy(LazyObjectFactoryInterface $factory): LazyGhostBuilderInterface
+    {
+        return $factory->ghost(self::class);
+    }
+
+    #[Override]
+    public function isUninitialized(): bool
+    {
+        return new ReflectionClass(self::class)->isUninitializedLazyObject($this);
+    }
 }

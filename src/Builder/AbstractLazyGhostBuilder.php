@@ -49,7 +49,7 @@ abstract class AbstractLazyGhostBuilder
     }
 
     /**
-	 * @param ReflectionClass<T> $reflector
+     * @param ReflectionClass<T> $reflector
      * @throws LazyObjectException
      * @phpstan-assert !null $this->initializer
      */
@@ -63,7 +63,7 @@ abstract class AbstractLazyGhostBuilder
     }
 
     /**
-	 * @param ReflectionClass<T> $reflector
+     * @param ReflectionClass<T> $reflector
      * @return Closure(T): void
      * @throws LazyObjectException
      */
@@ -93,7 +93,7 @@ abstract class AbstractLazyGhostBuilder
     /**
      * We check that all fields that are not marked as lazy are transferred
      *
-	 * @param ReflectionClass<T> $reflector
+     * @param ReflectionClass<T> $reflector
      * @throws LazyObjectException
      */
     private function checkGivenAllNotLazyConstructorParameters(ReflectionClass $reflector): void
@@ -108,7 +108,7 @@ abstract class AbstractLazyGhostBuilder
     }
 
     /**
-	 * @param ReflectionClass<T> $reflector
+     * @param ReflectionClass<T> $reflector
      * @return iterable<ReflectionProperty>
      * @throws LazyObjectException
      */
@@ -122,7 +122,7 @@ abstract class AbstractLazyGhostBuilder
     }
 
     /**
-	 * @param ReflectionClass<T> $reflector
+     * @param ReflectionClass<T> $reflector
      * @return list<Property>
      * @throws LazyObjectException
      */

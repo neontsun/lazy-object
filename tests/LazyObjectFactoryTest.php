@@ -38,16 +38,16 @@ final class LazyObjectFactoryTest extends TestCase
 
         self::assertInstanceOf(LazyGhostBuilderInterface::class, $builder);
     }
-	
-	/**
-	 * @throws InvalidArgumentException
-	 */
+
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Test]
     public function exceptInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-		/** @phpstan-ignore-next-line */
+        /** @phpstan-ignore-next-line */
         $this->factory->ghost('class-string');
     }
 }

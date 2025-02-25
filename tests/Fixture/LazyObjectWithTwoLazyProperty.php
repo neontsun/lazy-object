@@ -8,13 +8,13 @@ use Neontsun\LazyObject\Attribute\Lazy;
 
 final readonly class LazyObjectWithTwoLazyProperty
 {
-	/**
-	 * @param list<mixed> $firstData
-	 */
+    /**
+     * @param list<mixed> $firstData
+     */
     public function __construct(
         #[Lazy]
         private(set) array $firstData,
-		#[Lazy]
+        #[Lazy]
         private(set) int $secondData,
     ) {}
 }
