@@ -26,7 +26,7 @@ final readonly class LazyObjectWithImplementedLazyInterface implements LazyInter
 	
 	/**
 	 * @param LazyObjectFactoryInterface $factory
-	 * @return LazyGhostBuilderInterface
+	 * @return LazyGhostBuilderInterface<self>
 	 * @throws InvalidArgumentException
 	 */
 	#[Override]

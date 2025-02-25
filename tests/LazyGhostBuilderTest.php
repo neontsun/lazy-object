@@ -12,6 +12,7 @@ use Neontsun\LazyObject\Exception\LazyObjectException;
 use Neontsun\LazyObject\LazyObjectFactory;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithImplementedLazyInterface;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithOneLazyProperty;
+use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithTwoLazyProperty;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Exception;
@@ -42,9 +43,7 @@ final class LazyGhostBuilderTest extends TestCase
     #[Test]
     public function checkBuilderPropertiesFilled(): void
     {
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $filledBuilder = $builder
+        $filledBuilder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(Property $data): void {
@@ -75,9 +74,7 @@ final class LazyGhostBuilderTest extends TestCase
     #[Test]
     public function checkSuccessBuildGhostWithLazyProperties(): void
     {
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $ghost = $builder
+        $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(Property $data): void {
@@ -88,7 +85,28 @@ final class LazyGhostBuilderTest extends TestCase
         $this->assertInstanceOf(LazyObjectWithOneLazyProperty::class, $ghost);
         $this->assertTrue(new ReflectionClass(LazyObjectWithOneLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
-
+	
+	/**
+	 * @throws Exception
+	 * @throws ExpectationFailedException
+	 * @throws InvalidArgumentException
+	 * @throws LazyObjectException
+	 * @throws UnknownClassOrInterfaceException
+	 */
+	#[Test]
+	public function checkSuccessBuildGhostWithSomeLazyProperties(): void
+	{
+		$ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
+			->initializer(static function(Property $firstData, Property $secondData): void {
+				$firstData->value = [1, 2, 3];
+				$secondData->value = 123;
+			})
+			->build();
+		
+		$this->assertInstanceOf(LazyObjectWithTwoLazyProperty::class, $ghost);
+		$this->assertTrue(new ReflectionClass(LazyObjectWithTwoLazyProperty::class)->isUninitializedLazyObject($ghost));
+	}
+	
     /**
      * @throws Exception
      * @throws ExpectationFailedException
@@ -98,9 +116,7 @@ final class LazyGhostBuilderTest extends TestCase
     #[Test]
     public function checkInitializedTriggered(): void
     {
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $ghost = $builder
+        $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(Property $data): void {
@@ -122,9 +138,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $builder
+		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->build();
@@ -139,9 +153,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $builder
+		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->initializer(static function(Property $data): void {
                 $data->value = [1, 2, 3];
             })
@@ -157,9 +169,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $builder
+		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', [])
             ->property('date', 12_345)
             ->initializer(static function(Property $data): void {
@@ -177,9 +187,7 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $this->expectException(LazyObjectException::class);
 
-        $builder = $this->factory->ghost(LazyObjectWithOneLazyProperty::class);
-
-        $ghost = $builder
+        $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(Property $data): void {
