@@ -1,6 +1,10 @@
 # neontsun/lazy-object
 
-[![Latest Stable Version](https://poser.pugx.org/neontsun/lazy-object/v)](https://packagist.org/packages/neontsun/lazy-object)
+[![Latest Stable Version](https://poser.pugx.org/neontsun/lazy-object/v?style=for-the-badge)](https://packagist.org/packages/neontsun/lazy-object)
+[![PHP Version Require](http://poser.pugx.org/neontsun/lazy-object/require/php?style=for-the-badge)](https://packagist.org/packages/neontsun/lazy-object)
+[![License](http://poser.pugx.org/neontsun/lazy-object/license?style=for-the-badge)](https://packagist.org/packages/neontsun/lazy-object)
+[![Total Downloads](http://poser.pugx.org/neontsun/lazy-object/downloads?style=for-the-badge)](https://packagist.org/packages/neontsun/lazy-object)
+[![Latest Unstable Version](http://poser.pugx.org/neontsun/lazy-object/v/unstable?style=for-the-badge)](https://packagist.org/packages/neontsun/lazy-object)
 
 Wrapper package over native [lazy object](https://www.php.net/manual/en/language.oop5.lazy-objects.php) functionality in PHP
 
