@@ -10,7 +10,7 @@ use Neontsun\LazyObject\Contract\Builder\LazyGhostBuilderInterface;
 use Neontsun\LazyObject\Contract\LazyObjectFactoryInterface;
 use Override;
 
-final readonly class LazyObjectFactory implements LazyObjectFactoryInterface
+class LazyObjectFactory implements LazyObjectFactoryInterface
 {
     /**
      * @inheritDoc
