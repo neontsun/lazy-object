@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Neontsun\LazyObject\Contract\Builder;
 
 use Closure;
+use Neontsun\LazyObject\DTO\Property;
 use Neontsun\LazyObject\Exception\LazyObjectException;
 
 /**
@@ -14,10 +15,8 @@ interface LazyGhostBuilderInterface
 {
     /**
      * Set up an initializer that will be called when lazy fields are accessed.
-     * Lazy property objects are passed to the closure parameters.
-     * {@see \Neontsun\LazyObject\DTO\Property}
      *
-     * @param Closure():void $closure
+     * @param Closure():iterable<Property> $closure
      * @return self<T>
      */
     public function initializer(Closure $closure): self;

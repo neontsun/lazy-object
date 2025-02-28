@@ -7,9 +7,11 @@ namespace Neontsun\LazyObject\Builder;
 use Closure;
 use InvalidArgumentException;
 use Neontsun\LazyObject\Attribute\Lazy;
+use Neontsun\LazyObject\DTO\LazyProperty;
 use Neontsun\LazyObject\DTO\Property;
 use Neontsun\LazyObject\Exception\LazyObjectException;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
 use Throwable;
 
@@ -26,7 +28,7 @@ abstract class AbstractLazyGhostBuilder
     protected readonly string $class;
 
     /**
-     * @var null|Closure():void
+     * @var null|Closure():iterable<Property>
      */
     protected ?Closure $initializer = null;
 
@@ -71,15 +73,27 @@ abstract class AbstractLazyGhostBuilder
     {
         $this->checksBeforeBuild($reflector);
 
-        $lazyProperties = $this->getLazyProperties($reflector);
-        $initializer = $this->initializer;
+        $lazyPropertiesIterator = ($this->initializer)();
+        $lazyProperties = [];
 
-        return static function(object $class) use ($lazyProperties, $reflector, $initializer): void {
-            ($initializer)(...$lazyProperties);
-
+        foreach ($lazyPropertiesIterator as $lazyProperty) {
             try {
-                foreach ($lazyProperties as $property) {
-                    $reflector->getProperty($property->name)->setRawValue($class, $property->value);
+                $lazyProperties[] = new LazyProperty(
+                    property: $reflector->getProperty($lazyProperty->name),
+                    value: $lazyProperty->value,
+                );
+            } catch (ReflectionException $e) {
+                throw new LazyObjectException(
+                    message: 'One of the properties returned from the closure was not found',
+                    previous: $e,
+                );
+            }
+        }
+
+        return static function(object $class) use ($lazyProperties): void {
+            try {
+                foreach ($lazyProperties as $lazyProperty) {
+                    $lazyProperty->property->setRawValue($class, $lazyProperty->value);
                 }
             } catch (Throwable $e) {
                 throw new LazyObjectException(
@@ -119,24 +133,6 @@ abstract class AbstractLazyGhostBuilder
                 yield $property;
             }
         }
-    }
-
-    /**
-     * @param ReflectionClass<T> $reflector
-     * @return list<Property>
-     * @throws LazyObjectException
-     */
-    private function getLazyProperties(ReflectionClass $reflector): array
-    {
-        $properties = [];
-
-        foreach ($this->constructorProperties($reflector) as $property) {
-            if ([] !== $property->getAttributes(Lazy::class)) {
-                $properties[] = new Property(name: $property->getName());
-            }
-        }
-
-        return $properties;
     }
 
     /**
