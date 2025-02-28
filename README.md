@@ -68,10 +68,11 @@ $factory = new LazyObjectFactory();
 $ghost = $factory
     ->ghost(Test::class)
     ->property('uuid', 'uuid')
-    ->initializer(static function (Property $data): void {
-        sleep(10);
-        
-        $data->value = [1, 2, 3];
+    ->initializer(static function (): iterable {
+        yield new Property(
+            name: 'data',
+            value: [1, 2, 3],
+        );
     })
     ->build();
 
@@ -132,10 +133,11 @@ $factory = new LazyObjectFactory();
 
 $ghost = Test::lazy($factory)
     ->property('uuid', 'uuid')
-    ->initializer(static function (Property $data): void {
-        sleep(10);
-        
-        $data->value = [1, 2, 3];
+    ->initializer(static function (): iterable {
+        yield new Property(
+            name: 'data',
+            value: [1, 2, 3],  
+        ); 
     })
     ->build();
 
@@ -233,24 +235,38 @@ use Neontsun\LazyObject\DTO\Property;
 $factory = new LazyObjectFactory();
 
 $tasksCollection = TaskCollection::lazy($factory)
-    ->initializer(static function (Property $items): void {
-        $items->value = [
-            new Task(
-                title: 'Title',
-                description: 'Description',
-            ),
-            // ...
-        ];
+    ->initializer(static function (): iterable {
+        yield new Property(
+            name: 'items',
+            value: [
+                new Task(
+                    title: 'Title',
+                    description: 'Description',
+                ),
+                // ...
+            ],  
+        );
     })
     ->build();
 
 $userAggregate = UserAggregate::lazy($factory)
     ->property('id', 'uuid')
     ->property('tasks', $tasksCollection)
-    ->initializer(static function (Property $name, Property $age, Property $createdAt): void {
-        $name->value = 'Name';
-        $age->value = 25;
-        $createdAt->value = '2025-01-01 12:00:00';
+    ->initializer(static function (): iterable {
+        yield from [
+            new Property(
+                name: 'name',
+                value: 'Name', 
+            ),
+            new Property(
+                name: 'age',
+                value: 25, 
+            ),
+            new Property(
+                name: 'createdAt',
+                value: '2025-01-01 12:00:00', 
+            ),
+        ];
     })
     ->build();
 
