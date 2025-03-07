@@ -57,6 +57,10 @@
         "phpstan": "tools/phpstan/vendor/bin/phpstan analyse --autoload-file vendor/autoload.php --configuration phpstan.dist.neon",
         "phpstan-baseline": "tools/phpstan/vendor/bin/phpstan analyse --autoload-file vendor/autoload.php --configuration phpstan.dist.neon --generate-baseline phpstan-baseline.neon",
         "rector": "tools/rector/vendor/bin/rector process --config=rector.php --ansi",
-        "tests": "vendor/bin/phpunit --configuration phpunit.xml"
+        "tests": "vendor/bin/phpunit --configuration phpunit.xml",
+        "quality": [
+            "@phpstan",
+            "@tests"
+        ]
     }
 }
