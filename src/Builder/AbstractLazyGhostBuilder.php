@@ -124,11 +124,10 @@ abstract class AbstractLazyGhostBuilder
     /**
      * @param ReflectionClass<T> $reflector
      * @return iterable<ReflectionProperty>
-     * @throws LazyObjectException
      */
     private function getNonLazyProperties(ReflectionClass $reflector): iterable
     {
-        foreach ($this->constructorProperties($reflector) as $property) {
+        foreach ($this->getProperties($reflector) as $property) {
             if ([] === $property->getAttributes(Lazy::class)) {
                 yield $property;
             }
@@ -138,18 +137,9 @@ abstract class AbstractLazyGhostBuilder
     /**
      * @param ReflectionClass<T> $reflector
      * @return iterable<ReflectionProperty>
-     * @throws LazyObjectException
      */
-    private function constructorProperties(ReflectionClass $reflector): iterable
+    private function getProperties(ReflectionClass $reflector): iterable
     {
-        $properties = $reflector->getProperties();
-
-        foreach ($properties as $property) {
-            if (! $property->isPromoted()) {
-                throw new LazyObjectException('Property is not promoted to constructor parameter class property');
-            }
-
-            yield $property;
-        }
+        yield from $reflector->getProperties();
     }
 }
