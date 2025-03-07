@@ -1,4 +1,5 @@
 includes:
+  - phpstan-baseline.neon
   - tools/phpstan/vendor/phpstan/phpstan/conf/bleedingEdge.neon
   - tools/phpstan/vendor/phpstan/phpstan-deprecation-rules/rules.neon
   - tools/phpstan/vendor/phpstan/phpstan-strict-rules/rules.neon

@@ -5,21 +5,3 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: tests/LazyGhostBuilderTest.php
-
-		-
-			message: '#^Parameter \#1 \$closure of method Neontsun\\LazyObject\\Contract\\Builder\\LazyGhostBuilderInterface\<Neontsun\\LazyObject\\Tests\\Fixture\\LazyObjectWithImplementedLazyInterface\>\:\:initializer\(\) expects Closure\(\)\: void, Closure\(Neontsun\\LazyObject\\DTO\\Property\)\: void given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/LazyGhostBuilderTest.php
-
-		-
-			message: '#^Parameter \#1 \$closure of method Neontsun\\LazyObject\\Contract\\Builder\\LazyGhostBuilderInterface\<Neontsun\\LazyObject\\Tests\\Fixture\\LazyObjectWithOneLazyProperty\>\:\:initializer\(\) expects Closure\(\)\: void, Closure\(Neontsun\\LazyObject\\DTO\\Property\)\: void given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/LazyGhostBuilderTest.php
-
-		-
-			message: '#^Parameter \#1 \$closure of method Neontsun\\LazyObject\\Contract\\Builder\\LazyGhostBuilderInterface\<Neontsun\\LazyObject\\Tests\\Fixture\\LazyObjectWithTwoLazyProperty\>\:\:initializer\(\) expects Closure\(\)\: void, Closure\(Neontsun\\LazyObject\\DTO\\Property, Neontsun\\LazyObject\\DTO\\Property\)\: void given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/LazyGhostBuilderTest.php
