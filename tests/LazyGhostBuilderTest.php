@@ -133,7 +133,6 @@ final class LazyGhostBuilderTest extends TestCase
     public function checkSuccessBuildGhostWithNonConstructorProperties(): void
     {
         $ghost = $this->factory->ghost(LazyObjectWithNonConstructorProperties::class)
-            ->property('test2', 123)
             ->initializer(static function(): iterable {
                 yield from [
                     new Property(

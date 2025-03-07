@@ -11,7 +11,7 @@ class A
     #[Lazy]
     protected(set) string $test;
 
-    protected(set) int $test2;
+    protected(set) int $test2 = 123;
 }
 
 final class LazyObjectWithNonConstructorProperties extends A
