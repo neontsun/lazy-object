@@ -140,7 +140,7 @@ abstract class AbstractLazyGhostBuilder
 				}
 			}
 			
-            if (!$hasAttribute && null === $property->getDefaultValue()) {
+            if (! $hasAttribute && ! $property->hasDefaultValue()) {
                 yield $property;
             }
         }
