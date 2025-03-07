@@ -11,6 +11,7 @@ use Neontsun\LazyObject\DTO\Property;
 use Neontsun\LazyObject\Exception\LazyObjectException;
 use Neontsun\LazyObject\LazyObjectFactory;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithImplementedLazyInterface;
+use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithNonConstructorProperties;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithOneLazyProperty;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithTwoLazyProperty;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -47,10 +48,10 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3], 
-				);
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             });
 
         $reflector = new ReflectionClass($filledBuilder);
@@ -82,9 +83,9 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('date', '2025-12-01')
             ->initializer(static function(): iterable {
                 yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             })
             ->build();
 
@@ -104,21 +105,59 @@ final class LazyGhostBuilderTest extends TestCase
     {
         $ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
             ->initializer(static function(): iterable {
-				yield from [
-					new Property(
-						name: 'firstData',
-						value: [1, 2, 3],
-					),
-					new Property(
-						name: 'secondData',
-						value: 123,
-					),
-				];
+                yield from [
+                    new Property(
+                        name: 'firstData',
+                        value: [1, 2, 3],
+                    ),
+                    new Property(
+                        name: 'secondData',
+                        value: 123,
+                    ),
+                ];
             })
             ->build();
 
         $this->assertInstanceOf(LazyObjectWithTwoLazyProperty::class, $ghost);
         $this->assertTrue(new ReflectionClass(LazyObjectWithTwoLazyProperty::class)->isUninitializedLazyObject($ghost));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     * @throws UnknownClassOrInterfaceException
+     */
+    #[Test]
+    public function checkSuccessBuildGhostWithNonConstructorProperties(): void
+    {
+        $ghost = $this->factory->ghost(LazyObjectWithNonConstructorProperties::class)
+            ->property('test2', 123)
+            ->initializer(static function(): iterable {
+                yield from [
+                    new Property(
+                        name: 'test',
+                        value: 'foo',
+                    ),
+                    new Property(
+                        name: 'name',
+                        value: 'bar',
+                    ),
+                    new Property(
+                        name: 'age',
+                        value: 25,
+                    ),
+                    new Property(
+                        name: 'birthday',
+                        value: '2025-01-01 12:00:00',
+                    ),
+                ];
+            })
+            ->build();
+
+        $this->assertInstanceOf(LazyObjectWithNonConstructorProperties::class, $ghost);
+        $this->assertTrue(new ReflectionClass(LazyObjectWithNonConstructorProperties::class)->isUninitializedLazyObject($ghost));
     }
 
     /**
@@ -134,10 +173,10 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             })
             ->build();
 
@@ -172,10 +211,10 @@ final class LazyGhostBuilderTest extends TestCase
 
         $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             })
             ->build();
     }
@@ -193,10 +232,10 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('name', [])
             ->property('date', 12_345)
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             })
             ->build();
     }
@@ -214,39 +253,39 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: 123,
-				);
+                yield new Property(
+                    name: 'data',
+                    value: 123,
+                );
             })
             ->build();
 
         $data = $ghost->data;
     }
-	
-	/**
-	 * @throws InvalidArgumentException
-	 * @throws LazyObjectException
-	 */
-	#[Test]
-	public function expectExceptionForBuildWithInvalidLazyProperty(): void
-	{
-		$this->expectException(LazyObjectException::class);
-		
-		$ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
-			->property('name', 'name')
-			->property('date', '2025-12-01')
-			->initializer(static function(): iterable {
-				yield new Property(
-					name: 'invalidData',
-					value: 123,
-				);
-			})
-			->build();
-		
-		$data = $ghost->data;
-	}
-	
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     */
+    #[Test]
+    public function expectExceptionForBuildWithInvalidLazyProperty(): void
+    {
+        $this->expectException(LazyObjectException::class);
+
+        $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+            ->property('name', 'name')
+            ->property('date', '2025-12-01')
+            ->initializer(static function(): iterable {
+                yield new Property(
+                    name: 'invalidData',
+                    value: 123,
+                );
+            })
+            ->build();
+
+        $data = $ghost->data;
+    }
+
     /**
      * @throws Exception
      * @throws ExpectationFailedException
@@ -260,10 +299,10 @@ final class LazyGhostBuilderTest extends TestCase
             ->property('name', 'name')
             ->property('date', '2025-12-01')
             ->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
             })
             ->build();
 
