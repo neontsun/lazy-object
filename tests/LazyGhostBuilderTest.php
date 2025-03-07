@@ -13,6 +13,7 @@ use Neontsun\LazyObject\LazyObjectFactory;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithImplementedLazyInterface;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithNonConstructorProperties;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithOneLazyProperty;
+use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithStaticPropertyAndDefaultLazyProperty;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithTwoLazyProperty;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -157,6 +158,32 @@ final class LazyGhostBuilderTest extends TestCase
 
         $this->assertInstanceOf(LazyObjectWithNonConstructorProperties::class, $ghost);
         $this->assertTrue(new ReflectionClass(LazyObjectWithNonConstructorProperties::class)->isUninitializedLazyObject($ghost));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     * @throws UnknownClassOrInterfaceException
+     */
+    #[Test]
+    public function checkSuccessBuildGhostWithStaticPropertyAndDefaultLazyProperty(): void
+    {
+        $ghost = $this->factory->ghost(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class)
+			->property('name', 'name')
+            ->initializer(static function(): iterable {
+                yield from [
+                    new Property(
+                        name: 'items',
+                        value: [1, 2, 3],
+                    ),
+                ];
+            })
+            ->build();
+
+        $this->assertInstanceOf(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class, $ghost);
+        $this->assertTrue(new ReflectionClass(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
 
     /**
