@@ -12,6 +12,7 @@ use Neontsun\LazyObject\Exception\LazyObjectException;
 use Neontsun\LazyObject\LazyObjectFactory;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithImplementedLazyInterface;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithNonConstructorProperties;
+use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithNullDefaultProperty;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithOneLazyProperty;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithStaticPropertyAndDefaultLazyProperty;
 use Neontsun\LazyObject\Tests\Fixture\LazyObjectWithTwoLazyProperty;
@@ -184,6 +185,32 @@ final class LazyGhostBuilderTest extends TestCase
 
         $this->assertInstanceOf(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class, $ghost);
         $this->assertTrue(new ReflectionClass(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class)->isUninitializedLazyObject($ghost));
+    }
+
+    /**
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @throws LazyObjectException
+     * @throws UnknownClassOrInterfaceException
+     */
+    #[Test]
+    public function checkSuccessBuildGhostWithNullDefaultProperty(): void
+    {
+        $ghost = $this->factory->ghost(LazyObjectWithNullDefaultProperty::class)
+			->property('name', 'name')
+            ->initializer(static function(): iterable {
+                yield from [
+                    new Property(
+                        name: 'age',
+                        value: 1,
+                    ),
+                ];
+            })
+            ->build();
+
+        $this->assertInstanceOf(LazyObjectWithNullDefaultProperty::class, $ghost);
+        $this->assertTrue(new ReflectionClass(LazyObjectWithNullDefaultProperty::class)->isUninitializedLazyObject($ghost));
     }
 
     /**
