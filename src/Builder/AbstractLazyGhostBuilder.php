@@ -128,18 +128,18 @@ abstract class AbstractLazyGhostBuilder
     private function getNonLazyProperties(ReflectionClass $reflector): iterable
     {
         foreach ($this->getProperties($reflector) as $property) {
-			$propertyAttributes = $property->getAttributes();
-			
-			$hasAttribute = false;
-			
-			foreach ($propertyAttributes as $propertyAttribute) {
-				if ($propertyAttribute->newInstance() instanceof Lazy) {
-					$hasAttribute = true;
-					
-					break;
-				}
-			}
-			
+            $propertyAttributes = $property->getAttributes();
+
+            $hasAttribute = false;
+
+            foreach ($propertyAttributes as $propertyAttribute) {
+                if ($propertyAttribute->newInstance() instanceof Lazy) {
+                    $hasAttribute = true;
+
+                    break;
+                }
+            }
+
             if (! $hasAttribute && ! $property->hasDefaultValue()) {
                 yield $property;
             }

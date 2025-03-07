@@ -18,7 +18,7 @@ final class LazyObjectWithNonConstructorProperties extends A
 {
     #[Lazy]
     private(set) string $name;
-	
+
     #[Lazy]
     private(set) int $age;
 

@@ -8,11 +8,11 @@ use Neontsun\LazyObject\Attribute\Lazy;
 
 final class LazyObjectWithNullDefaultProperty
 {
-	public ?int $default = null;
-	
-	public function __construct(
-		private(set) string $name,
-		#[Lazy]
-		private(set) int $age,
-	) {}
+    public ?int $default = null;
+
+    public function __construct(
+        private(set) string $name,
+        #[Lazy]
+        private(set) int $age,
+    ) {}
 }

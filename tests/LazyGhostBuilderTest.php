@@ -172,7 +172,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function checkSuccessBuildGhostWithStaticPropertyAndDefaultLazyProperty(): void
     {
         $ghost = $this->factory->ghost(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class)
-			->property('name', 'name')
+            ->property('name', 'name')
             ->initializer(static function(): iterable {
                 yield from [
                     new Property(
@@ -198,7 +198,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function checkSuccessBuildGhostWithNullDefaultProperty(): void
     {
         $ghost = $this->factory->ghost(LazyObjectWithNullDefaultProperty::class)
-			->property('name', 'name')
+            ->property('name', 'name')
             ->initializer(static function(): iterable {
                 yield from [
                     new Property(
