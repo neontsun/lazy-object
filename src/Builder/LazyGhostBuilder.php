@@ -18,18 +18,18 @@ use Throwable;
  */
 class LazyGhostBuilder extends AbstractLazyGhostBuilder implements LazyGhostBuilderInterface
 {
-	/**
-	 * @inheritDoc
-	 * @return self<T>
-	 */
-	#[Override]
-	public function setCustomLazyAttribute(string $customLazyAttribute): self 
-	{
-		$this->customLazyAttribute = $customLazyAttribute;
-		
-		return $this;
-	}
-	
+    /**
+     * @inheritDoc
+     * @return self<T>
+     */
+    #[Override]
+    public function setCustomLazyAttribute(string $customLazyAttribute): self
+    {
+        $this->customLazyAttribute = $customLazyAttribute;
+
+        return $this;
+    }
+
     /**
      * @inheritDoc
      * @return self<T>
@@ -91,10 +91,10 @@ class LazyGhostBuilder extends AbstractLazyGhostBuilder implements LazyGhostBuil
             return $ghost;
         } catch (Throwable $e) {
             throw new LazyObjectException(
-				message: $e->getMessage(),
-				code: $e->getCode(),
-				previous: $e,
-			);
+                message: $e->getMessage(),
+                code: $e->getCode(),
+                previous: $e,
+            );
         }
     }
 }

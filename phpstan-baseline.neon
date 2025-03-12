@@ -1,7 +1,19 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Instanceof between Neontsun\\LazyObject\\DTO\\Property and Neontsun\\LazyObject\\DTO\\Property will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Builder/AbstractLazyGhostBuilder.php
+
+		-
 			message: '#^Access to an undefined property Neontsun\\LazyObject\\Tests\\Fixture\\LazyObjectWithOneLazyProperty\:\:\$foo\.$#'
 			identifier: property.notFound
+			count: 1
+			path: tests/LazyGhostBuilderTest.php
+
+		-
+			message: '#^Parameter \#1 \$closure of method Neontsun\\LazyObject\\Contract\\Builder\\LazyGhostBuilderInterface\<Neontsun\\LazyObject\\Tests\\Fixture\\LazyObjectWithOneLazyProperty\>\:\:initializer\(\) expects Closure\(\)\: iterable\<Neontsun\\LazyObject\\DTO\\Property\>, Closure\(\)\: Generator\<int, 1, mixed, void\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: tests/LazyGhostBuilderTest.php

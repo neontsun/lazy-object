@@ -8,12 +8,12 @@ use ReflectionProperty;
 
 final readonly class ObjectProperties
 {
-	/**
-	 * @param list<ReflectionProperty> $nonLazyProperties
-	 * @param non-negative-int $lazyPropertiesCount
-	 */
-	public function __construct(
-		private(set) array $nonLazyProperties,
-		private(set) int $lazyPropertiesCount,
-	) {}
+    /**
+     * @param list<ReflectionProperty> $nonLazyProperties
+     * @param non-negative-int $lazyPropertiesCount
+     */
+    public function __construct(
+        private(set) array $nonLazyProperties,
+        private(set) int $lazyPropertiesCount,
+    ) {}
 }

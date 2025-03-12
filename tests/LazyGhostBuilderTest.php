@@ -249,7 +249,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithoutInitializer(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('Initializer closure must be assigned');
+        $this->expectExceptionMessage('Initializer closure must be assigned');
 
         $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
@@ -265,7 +265,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithoutNeededProperties(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('Not all properties were passed to create the class');
+        $this->expectExceptionMessage('Not all properties were passed to create the class');
 
         $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->initializer(static function(): iterable {
@@ -285,18 +285,18 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithInvalidPropertyType(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('The type of the non-lazy property does not match the type in the class constructor');
-		
-		$this->factory->ghost(LazyObjectWithOneLazyProperty::class)
-			->property('name', [])
-			->property('date', 12_345)
-			->initializer(static function(): iterable {
-				yield new Property(
-					name: 'data',
-					value: [1, 2, 3],
-				);
-			})
-			->build();
+        $this->expectExceptionMessage('The type of the non-lazy property does not match the type in the class constructor');
+
+        $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+            ->property('name', [])
+            ->property('date', 12_345)
+            ->initializer(static function(): iterable {
+                yield new Property(
+                    name: 'data',
+                    value: [1, 2, 3],
+                );
+            })
+            ->build();
     }
 
     /**
@@ -307,8 +307,8 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithInvalidLazyPropertyType(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('The properties passed to create the deferred object do not match the types declared in the class');
-		
+        $this->expectExceptionMessage('The properties passed to create the deferred object do not match the types declared in the class');
+
         $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
             ->property('date', '2025-12-01')
@@ -331,7 +331,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithInvalidLazyProperty(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('One of the properties returned from the closure was not found');
+        $this->expectExceptionMessage('One of the properties returned from the closure was not found');
 
         $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
             ->property('name', 'name')
@@ -355,18 +355,18 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithInvalidLazyPropertyCount(): void
     {
         $this->expectException(LazyObjectException::class);
-		$this->expectExceptionMessage('Not all lazy properties were passed for lazy initialization');
-		
-		$ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
-			->initializer(static function(): iterable {
-				yield new Property(
-					name: 'firstData',
-					value: [1, 2, 3],
-				);
-			})
-			->build();
-		
-		$data = $ghost->secondData;
+        $this->expectExceptionMessage('Not all lazy properties were passed for lazy initialization');
+
+        $ghost = $this->factory->ghost(LazyObjectWithTwoLazyProperty::class)
+            ->initializer(static function(): iterable {
+                yield new Property(
+                    name: 'firstData',
+                    value: [1, 2, 3],
+                );
+            })
+            ->build();
+
+        $data = $ghost->secondData;
     }
 
     /**
@@ -377,16 +377,16 @@ final class LazyGhostBuilderTest extends TestCase
     public function expectExceptionForBuildWithInvalidIterableInitializer(): void
     {
         $this->expectException(UnexpectedTypeException::class);
-		
-		$ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
-			->property('name', 'name')
-			->property('date', '2025-12-01')
-			->initializer(static function(): iterable {
-				yield 1;
-			})
-			->build();
-		
-		$data = $ghost->data;
+
+        $ghost = $this->factory->ghost(LazyObjectWithOneLazyProperty::class)
+            ->property('name', 'name')
+            ->property('date', '2025-12-01')
+            ->initializer(static function(): iterable {
+                yield 1;
+            })
+            ->build();
+
+        $data = $ghost->data;
     }
 
     /**
@@ -424,7 +424,7 @@ final class LazyGhostBuilderTest extends TestCase
     public function checkSuccessBuildGhostWithCustomLazyAttribute(): void
     {
         $ghost = $this->factory->ghost(LazyObjectWithCustomLazyProperty::class)
-			->setCustomLazyAttribute(CustomLazy::class)
+            ->setCustomLazyAttribute(CustomLazy::class)
             ->property('name', 'name')
             ->initializer(static function(): iterable {
                 yield new Property(
@@ -433,10 +433,10 @@ final class LazyGhostBuilderTest extends TestCase
                 );
             })
             ->build();
-		
-		$this->assertInstanceOf(LazyObjectWithCustomLazyProperty::class, $ghost);
-		$this->assertTrue(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
-		$foo = $ghost->data;
-		$this->assertFalse(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
+
+        $this->assertInstanceOf(LazyObjectWithCustomLazyProperty::class, $ghost);
+        $this->assertTrue(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
+        $foo = $ghost->data;
+        $this->assertFalse(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
 }
