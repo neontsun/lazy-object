@@ -13,6 +13,12 @@ use Neontsun\LazyObject\Exception\LazyObjectException;
  */
 interface LazyGhostBuilderInterface
 {
+	/**
+	 * @param class-string $customLazyAttribute
+	 * @return self<T>
+	 */
+	public function setCustomLazyAttribute(string $customLazyAttribute): self;
+	
     /**
      * Set up an initializer that will be called when lazy fields are accessed.
      *
