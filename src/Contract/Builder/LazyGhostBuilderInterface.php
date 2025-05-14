@@ -15,9 +15,8 @@ interface LazyGhostBuilderInterface
 {
     /**
      * @param class-string $customLazyAttribute
-     * @return self<T>
      */
-    public function setCustomLazyAttribute(string $customLazyAttribute): self;
+    public function setCustomLazyAttribute(string $customLazyAttribute): void;
 
     /**
      * Set up an initializer that will be called when lazy fields are accessed.

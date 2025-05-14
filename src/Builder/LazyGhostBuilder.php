@@ -20,14 +20,11 @@ class LazyGhostBuilder extends AbstractLazyGhostBuilder implements LazyGhostBuil
 {
     /**
      * @inheritDoc
-     * @return self<T>
      */
     #[Override]
-    public function setCustomLazyAttribute(string $customLazyAttribute): self
+    public function setCustomLazyAttribute(string $customLazyAttribute): void
     {
         $this->customLazyAttribute = $customLazyAttribute;
-
-        return $this;
     }
 
     /**
