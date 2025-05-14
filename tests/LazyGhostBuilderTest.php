@@ -78,7 +78,6 @@ final class LazyGhostBuilderTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws LazyObjectException
-     * @throws UnknownClassOrInterfaceException
      */
     #[Test]
     public function checkSuccessBuildGhostWithLazyProperties(): void
@@ -93,8 +92,7 @@ final class LazyGhostBuilderTest extends TestCase
                 );
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithOneLazyProperty::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithOneLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
 
@@ -103,7 +101,6 @@ final class LazyGhostBuilderTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws LazyObjectException
-     * @throws UnknownClassOrInterfaceException
      */
     #[Test]
     public function checkSuccessBuildGhostWithSomeLazyProperties(): void
@@ -122,8 +119,7 @@ final class LazyGhostBuilderTest extends TestCase
                 ];
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithTwoLazyProperty::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithTwoLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
 
@@ -132,7 +128,6 @@ final class LazyGhostBuilderTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws LazyObjectException
-     * @throws UnknownClassOrInterfaceException
      */
     #[Test]
     public function checkSuccessBuildGhostWithNonConstructorProperties(): void
@@ -159,8 +154,7 @@ final class LazyGhostBuilderTest extends TestCase
                 ];
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithNonConstructorProperties::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithNonConstructorProperties::class)->isUninitializedLazyObject($ghost));
     }
 
@@ -169,7 +163,6 @@ final class LazyGhostBuilderTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws LazyObjectException
-     * @throws UnknownClassOrInterfaceException
      */
     #[Test]
     public function checkSuccessBuildGhostWithStaticPropertyAndDefaultLazyProperty(): void
@@ -185,8 +178,7 @@ final class LazyGhostBuilderTest extends TestCase
                 ];
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithStaticPropertyAndDefaultLazyProperty::class)->isUninitializedLazyObject($ghost));
     }
 
@@ -195,7 +187,6 @@ final class LazyGhostBuilderTest extends TestCase
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws LazyObjectException
-     * @throws UnknownClassOrInterfaceException
      */
     #[Test]
     public function checkSuccessBuildGhostWithNullDefaultProperty(): void
@@ -211,8 +202,7 @@ final class LazyGhostBuilderTest extends TestCase
                 ];
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithNullDefaultProperty::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithNullDefaultProperty::class)->isUninitializedLazyObject($ghost));
     }
 
@@ -423,8 +413,10 @@ final class LazyGhostBuilderTest extends TestCase
     #[Test]
     public function checkSuccessBuildGhostWithCustomLazyAttribute(): void
     {
-        $ghost = $this->factory->ghost(LazyObjectWithCustomLazyProperty::class)
-            ->setCustomLazyAttribute(CustomLazy::class)
+		$builder = $this->factory->ghost(LazyObjectWithCustomLazyProperty::class);
+		$builder->setCustomLazyAttribute(CustomLazy::class);
+		
+        $ghost = $builder
             ->property('name', 'name')
             ->initializer(static function(): iterable {
                 yield new Property(
@@ -433,8 +425,7 @@ final class LazyGhostBuilderTest extends TestCase
                 );
             })
             ->build();
-
-        $this->assertInstanceOf(LazyObjectWithCustomLazyProperty::class, $ghost);
+		
         $this->assertTrue(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
         $foo = $ghost->data;
         $this->assertFalse(new ReflectionClass(LazyObjectWithCustomLazyProperty::class)->isUninitializedLazyObject($ghost));
